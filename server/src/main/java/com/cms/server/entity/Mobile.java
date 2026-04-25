@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "customer_mobile")
-public class mobile {
+public class Mobile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -12,5 +12,5 @@ public class mobile {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private customer customer;
+    private Customer customer;
 }

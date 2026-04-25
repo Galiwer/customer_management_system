@@ -1,6 +1,6 @@
 package com.cms.server.dto;
 
-public class country {
+public class CountryDTO {
 
         private Long id;
         private String name;

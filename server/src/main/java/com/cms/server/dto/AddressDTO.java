@@ -1,6 +1,6 @@
 package com.cms.server.dto;
 
-public class address {
+public class AddressDTO {
     private Long id;
 
     private String line1;

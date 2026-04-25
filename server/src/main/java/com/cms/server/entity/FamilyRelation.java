@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "family_relation")
-public class familyrelation {
+public class FamilyRelation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,10 +13,10 @@ public class familyrelation {
     // Owner customer
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private customer customer;
+    private Customer customer;
 
     // Family member (also a customer)
     @ManyToOne
     @JoinColumn(name = "family_member_id")
-    private customer familyMember;
+    private Customer familyMember;
 }

@@ -1,6 +1,6 @@
 package com.cms.server.dto;
 
-public class mobile {
+public class MobileDTO {
     private Long id;
     private String mobile;
 }
