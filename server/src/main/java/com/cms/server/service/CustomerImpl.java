@@ -1,21 +1,19 @@
-import com.cms.server.dto.AddressDTO;
-import com.cms.server.dto.CustomerResponseDTO;
-import com.cms.server.dto.FamilyMemberDTO;
-import com.cms.server.dto.MobileDTO;
-import com.cms.server.entity.Customer;
+package com.cms.server.service;
+
+import com.cms.server.dto.*;
+import com.cms.server.entity.*;
 import com.cms.server.repository.CustomerRepository;
-import com.cms.server.service.CustomerService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
@@ -28,59 +26,71 @@ public class CustomerImpl implements CustomerService {
         return mapToDTO(customer);
     }
 
-    // simple manual mapper for now (we will later move to Mapper class)
-    private CustomerResponseDTO mapToDTO(Customer c) {
+    @Override
+    public List<CustomerResponseDTO> getAllCustomers() {
 
+        List<Customer> allCustomers = customerRepository.findAll();
+
+        List<CustomerResponseDTO> resultList = new ArrayList<>();
+
+        for (Customer c : allCustomers) {
+            CustomerResponseDTO dto = mapToDTO(c);
+            resultList.add(dto);
+        }
+
+        return resultList;
+    }
+
+    private CustomerResponseDTO mapToDTO(Customer c) {
         CustomerResponseDTO dto = new CustomerResponseDTO();
         dto.setId(c.getId());
         dto.setName(c.getName());
         dto.setDob(c.getDob());
         dto.setNic(c.getNic());
 
-        // mobiles
-        List<MobileDTO> mobiles = c.getMobiles().stream()
-                .map(m -> {
-                    MobileDTO md = new MobileDTO();
-                    md.setId(m.getId());
-                    md.setMobile(m.getMobile());
-                    return md;
-                }).collect(Collectors.toList());
-
+        List<MobileDTO> mobiles = new ArrayList<>();
+        if (c.getMobiles() != null) {
+            for (Mobile m : c.getMobiles()) {
+                mobiles.add(new MobileDTO(m.getId(), m.getMobile()));
+            }
+        }
         dto.setMobiles(mobiles);
 
-        // addresses
-        List<AddressDTO> addresses = c.getAddresses().stream()
-                .map(a -> {
-                    AddressDTO ad = new AddressDTO();
-                    ad.setId(a.getId());
-                    ad.setLine1(a.getLine1());
-                    ad.setLine2(a.getLine2());
+        List<AddressDTO> addresses = new ArrayList<>();
+        if (c.getAddresses() != null) {
+            for (Address a : c.getAddresses()) {
+                AddressDTO ad = new AddressDTO();
+                ad.setId(a.getId());
+                ad.setLine1(a.getLine1());
+                ad.setLine2(a.getLine2());
 
-                    if (a.getCity() != null) {
-                        ad.setCityId(a.getCity().getId());
-                        ad.setCityName(a.getCity().getName());
-                    }
+                if (a.getCity() != null) {
+                    ad.setCityId(a.getCity().getId());
+                    ad.setCityName(a.getCity().getName());
+                }
 
-                    if (a.getCountry() != null) {
-                        ad.setCountryId(a.getCountry().getId());
-                        ad.setCountryName(a.getCountry().getName());
-                    }
-
-                    return ad;
-                }).collect(Collectors.toList());
-
+                if (a.getCountry() != null) {
+                    ad.setCountryId(a.getCountry().getId());
+                    ad.setCountryName(a.getCountry().getName());
+                }
+                addresses.add(ad);
+            }
+        }
         dto.setAddresses(addresses);
 
-        // family members
-        List<FamilyMemberDTO> family = c.getFamilyMembers().stream()
-                .map(f -> {
+        List<FamilyMemberDTO> family = new ArrayList<>();
+        if (c.getFamilyMembers() != null) {
+            for (FamilyRelation f : c.getFamilyMembers()) {
+                Customer relative = f.getFamilyMember();
+                if (relative != null) {
                     FamilyMemberDTO fm = new FamilyMemberDTO();
-                    fm.setId(f.getFamilyMember().getId());
-                    fm.setName(f.getFamilyMember().getName());
-                    fm.setNic(f.getFamilyMember().getNic());
-                    return fm;
-                }).collect(Collectors.toList());
-
+                    fm.setId(relative.getId());
+                    fm.setName(relative.getName());
+                    fm.setNic(relative.getNic());
+                    family.add(fm);
+                }
+            }
+        }
         dto.setFamilyMembers(family);
 
         return dto;
