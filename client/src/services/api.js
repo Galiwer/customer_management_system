@@ -36,6 +36,16 @@ export function updateCustomer(id, data) {
   });
 }
 
+export function deleteCustomer(id) {
+  return fetch(`${API_BASE_URL}/customers/${id}`, {
+    method: 'DELETE'
+  }).then(resp => {
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status}`);
+    }
+  });
+}
+
 export function uploadExcel(file) {
   const form = new FormData();
   form.append('file', file);

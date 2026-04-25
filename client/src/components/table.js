@@ -51,6 +51,10 @@ export function renderTable(data = [], options = {}) {
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
+  
+  const wrapper = document.createElement('div');
+  wrapper.className = 'table-scroll-wrapper';
+  wrapper.appendChild(table);
 
-  return table;
+  return wrapper;
 }

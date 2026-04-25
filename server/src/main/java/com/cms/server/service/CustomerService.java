@@ -11,5 +11,6 @@ public interface CustomerService {
     List<CustomerResponseDTO> getAllCustomers();
     CustomerResponseDTO createCustomer(CustomerRequestDTO request);
     CustomerResponseDTO updateCustomer(Long id, CustomerRequestDTO request);
+    void deleteCustomer(Long id);
     void uploadCustomers(MultipartFile file) throws IOException;
 }

@@ -5,8 +5,8 @@ import com.cms.server.entity.*;
 import com.cms.server.repository.CityRepository;
 import com.cms.server.repository.CountryRepository;
 import com.cms.server.repository.CustomerRepository;
+import com.monitorjbl.xlsx.StreamingReader;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CustomerImpl implements CustomerService {
@@ -76,22 +74,39 @@ public class CustomerImpl implements CustomerService {
 
     @Override
     @Transactional
+    public void deleteCustomer(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new RuntimeException("Customer not found!");
+        }
+        customerRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
     public void uploadCustomers(MultipartFile file) throws IOException {
-        try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+        // Cache for cities and countries to minimize DB calls
+        Map<String, City> cityCache = new HashMap<>();
+        Map<String, Country> countryCache = new HashMap<>();
+        
+        // Initial load of master data
+        cityRepository.findAll().forEach(c -> cityCache.put(c.getName(), c));
+        countryRepository.findAll().forEach(c -> countryCache.put(c.getName(), c));
+
+        try (InputStream is = file.getInputStream(); 
+             Workbook workbook = StreamingReader.builder()
+                .rowCacheSize(100)    // number of rows to keep in memory (default is 10)
+                .bufferSize(4096)     // buffer size to use when reading InputStream to a file (default is 1024)
+                .open(is)) {          // opens the InputStream for reading
+            
             Sheet sheet = workbook.getSheetAt(0);
-            Iterator<Row> rows = sheet.iterator();
+            List<Customer> batch = new ArrayList<>();
+            int count = 0;
 
-            // Skip Header row
-            if (rows.hasNext()) {
-                rows.next();
-            }
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) continue; // Skip header
 
-            while (rows.hasNext()) {
-                Row row = rows.next();
-                
-                // Read columns
                 String name = getCellValue(row, 0);
-                String dobStr = getCellValue(row, 1); // Expected as String or Date
+                String dobStr = getCellValue(row, 1);
                 String nic = getCellValue(row, 2);
                 String mobilesStr = getCellValue(row, 3);
                 String line1 = getCellValue(row, 4);
@@ -100,7 +115,6 @@ public class CustomerImpl implements CustomerService {
 
                 if (nic == null || nic.isEmpty()) continue;
 
-                // Check if customer exists
                 Customer customer = customerRepository.findByNic(nic)
                         .orElse(new Customer());
                 
@@ -109,13 +123,14 @@ public class CustomerImpl implements CustomerService {
 
                 customer.setName(name);
                 customer.setNic(nic);
-                
-                // Handle Date
                 if (dobStr != null && !dobStr.isEmpty()) {
-                    customer.setDob(LocalDate.parse(dobStr));
+                    try {
+                        customer.setDob(LocalDate.parse(dobStr));
+                    } catch (Exception e) {
+                        // Handle date format if needed
+                    }
                 }
 
-                // Handle Mobiles
                 if (mobilesStr != null) {
                     for (String mNum : mobilesStr.split(",")) {
                         Mobile m = new Mobile();
@@ -125,33 +140,40 @@ public class CustomerImpl implements CustomerService {
                     }
                 }
 
-                // Handle Address
-                Address addr = new Address();
-                addr.setLine1(line1);
-                addr.setCustomer(customer);
+                if (line1 != null && !line1.isEmpty()) {
+                    Address addr = new Address();
+                    addr.setLine1(line1);
+                    addr.setCustomer(customer);
 
-                if (cityStr != null) {
-                    City city = cityRepository.findByName(cityStr)
-                            .orElseGet(() -> {
-                                City c = new City();
-                                c.setName(cityStr);
-                                return cityRepository.save(c);
-                            });
-                    addr.setCity(city);
+                    if (cityStr != null) {
+                        City city = cityCache.computeIfAbsent(cityStr, k -> {
+                            City c = new City();
+                            c.setName(k);
+                            return cityRepository.save(c);
+                        });
+                        addr.setCity(city);
+                    }
+
+                    if (countryStr != null) {
+                        Country country = countryCache.computeIfAbsent(countryStr, k -> {
+                            Country c = new Country();
+                            c.setName(k);
+                            return countryRepository.save(c);
+                        });
+                        addr.setCountry(country);
+                    }
+                    customer.getAddresses().add(addr);
                 }
 
-                if (countryStr != null) {
-                    Country country = countryRepository.findByName(countryStr)
-                            .orElseGet(() -> {
-                                Country c = new Country();
-                                c.setName(countryStr);
-                                return countryRepository.save(c);
-                            });
-                    addr.setCountry(country);
+                batch.add(customer);
+                if (++count % 500 == 0) {
+                    customerRepository.saveAll(batch);
+                    customerRepository.flush();
+                    batch.clear();
                 }
-                customer.getAddresses().add(addr);
-
-                customerRepository.save(customer);
+            }
+            if (!batch.isEmpty()) {
+                customerRepository.saveAll(batch);
             }
         }
     }

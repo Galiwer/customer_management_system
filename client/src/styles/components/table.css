@@ -1,40 +1,124 @@
-
-
-.simple-table {
+/* Horizontal scroll wrapper */
+.table-scroll-wrapper {
   width: 100%;
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 10px;
+}
+
+/* Table fills full width on large screens, scrolls on mobile */
+.simple-table, .my-table {
+  width: 100%;
+  min-width: 1100px;
   border-collapse: collapse;
-  font-family: 'Arial', sans-serif;
-  margin: 10px 0;
-}
-
-.simple-table th,
-.simple-table td {
-  border: 1px solid #ddd;
-  padding: 8px 12px;
   text-align: left;
+  font-family: 'Nunito', sans-serif;
+  table-layout: fixed;
 }
 
-.simple-table thead {
-  background-color: #f4f7f9;
-  color: #333;
+/* Column widths */
+.my-table th:nth-child(1) { width: 60px; }   /* ID */
+.my-table th:nth-child(2) { width: 160px; }  /* Name */
+.my-table th:nth-child(3) { width: 120px; }  /* DOB */
+.my-table th:nth-child(4) { width: 130px; }  /* NIC */
+.my-table th:nth-child(5) { width: 140px; }  /* Mobiles */
+.my-table th:nth-child(6) { width: 170px; }  /* Addresses */
+.my-table th:nth-child(7) { width: 150px; }  /* Family */
+.my-table th:nth-child(8) { width: 160px; }  /* Actions — wider so buttons don't vanish */
+
+/* Sticky headers */
+.simple-table th, .my-table th {
+  background: #f8fafc;
+  padding: 16px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.simple-table tbody tr:nth-child(even) {
-  background-color: #fafafa;
+/* Data cells */
+.simple-table td, .my-table td {
+  padding: 16px 18px;
+  font-size: 15px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.6;
 }
 
-.simple-table tbody tr:hover {
-  background-color: #e6f7ff;
+.simple-table tr:hover, .my-table tr:hover {
+  background-color: #f8fafc;
+  transition: background 0.15s;
 }
 
-.simple-table th {
-  font-weight: 600;
+/* Actions column — ALWAYS on one row, never hidden */
+.my-table td:last-child, .simple-table td:last-child {
+  white-space: nowrap;
+  min-width: 160px;
+  vertical-align: middle;
+  overflow: visible;
 }
 
-@media (max-width: 600px) {
-  .simple-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
+/* Action buttons */
+.btn-edit {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.btn-edit:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.btn-delete {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.btn-delete:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
 }

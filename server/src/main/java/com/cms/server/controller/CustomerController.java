@@ -40,6 +40,11 @@ public class CustomerController {
         return customerService.updateCustomer(id, request);
     }
 
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
+    }
+
     @PostMapping("/upload")
     public void upload(@RequestParam("file") MultipartFile file) throws IOException {
         customerService.uploadCustomers(file);
