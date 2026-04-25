@@ -4,7 +4,9 @@ import com.cms.server.dto.CustomerRequestDTO;
 import com.cms.server.dto.CustomerResponseDTO;
 import com.cms.server.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -36,5 +38,10 @@ public class CustomerController {
     @PutMapping("/{id}")
     public CustomerResponseDTO update(@PathVariable Long id, @RequestBody CustomerRequestDTO request) {
         return customerService.updateCustomer(id, request);
+    }
+
+    @PostMapping("/upload")
+    public void upload(@RequestParam("file") MultipartFile file) throws IOException {
+        customerService.uploadCustomers(file);
     }
 }
