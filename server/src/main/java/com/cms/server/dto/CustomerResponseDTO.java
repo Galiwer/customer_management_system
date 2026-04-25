@@ -12,26 +12,62 @@ public class CustomerResponseDTO {
     private List<AddressDTO> addresses;
     private List<FamilyMemberDTO> familyMembers;
 
-    public CustomerResponseDTO() {}
+    public CustomerResponseDTO() {
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDate getDob() { return dob; }
-    public void setDob(LocalDate dob) { this.dob = dob; }
+    public String getName() {
+        return name;
+    }
 
-    public String getNic() { return nic; }
-    public void setNic(String nic) { this.nic = nic; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public List<MobileDTO> getMobiles() { return mobiles; }
-    public void setMobiles(List<MobileDTO> mobiles) { this.mobiles = mobiles; }
+    public LocalDate getDob() {
+        return dob;
+    }
 
-    public List<AddressDTO> getAddresses() { return addresses; }
-    public void setAddresses(List<AddressDTO> addresses) { this.addresses = addresses; }
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
 
-    public List<FamilyMemberDTO> getFamilyMembers() { return familyMembers; }
-    public void setFamilyMembers(List<FamilyMemberDTO> familyMembers) { this.familyMembers = familyMembers; }
+    public String getNic() {
+        return nic;
+    }
+
+    public void setNic(String nic) {
+        this.nic = nic;
+    }
+
+    public List<MobileDTO> getMobiles() {
+        return mobiles;
+    }
+
+    public void setMobiles(List<MobileDTO> mobiles) {
+        this.mobiles = mobiles;
+    }
+
+    public List<AddressDTO> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressDTO> addresses) {
+        this.addresses = addresses;
+    }
+
+    public List<FamilyMemberDTO> getFamilyMembers() {
+        return familyMembers;
+    }
+
+    public void setFamilyMembers(List<FamilyMemberDTO> familyMembers) {
+        this.familyMembers = familyMembers;
+    }
 }

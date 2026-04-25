@@ -30,26 +30,62 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<FamilyRelation> familyMembers = new ArrayList<>();
 
-    public Customer() {}
+    public Customer() {
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDate getDob() { return dob; }
-    public void setDob(LocalDate dob) { this.dob = dob; }
+    public String getName() {
+        return name;
+    }
 
-    public String getNic() { return nic; }
-    public void setNic(String nic) { this.nic = nic; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public List<Mobile> getMobiles() { return mobiles; }
-    public void setMobiles(List<Mobile> mobiles) { this.mobiles = mobiles; }
+    public LocalDate getDob() {
+        return dob;
+    }
 
-    public List<Address> getAddresses() { return addresses; }
-    public void setAddresses(List<Address> addresses) { this.addresses = addresses; }
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
 
-    public List<FamilyRelation> getFamilyMembers() { return familyMembers; }
-    public void setFamilyMembers(List<FamilyRelation> familyMembers) { this.familyMembers = familyMembers; }
+    public String getNic() {
+        return nic;
+    }
+
+    public void setNic(String nic) {
+        this.nic = nic;
+    }
+
+    public List<Mobile> getMobiles() {
+        return mobiles;
+    }
+
+    public void setMobiles(List<Mobile> mobiles) {
+        this.mobiles = mobiles;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public List<FamilyRelation> getFamilyMembers() {
+        return familyMembers;
+    }
+
+    public void setFamilyMembers(List<FamilyRelation> familyMembers) {
+        this.familyMembers = familyMembers;
+    }
 }

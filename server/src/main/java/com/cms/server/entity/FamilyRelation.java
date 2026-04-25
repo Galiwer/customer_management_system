@@ -18,14 +18,30 @@ public class FamilyRelation {
     @JoinColumn(name = "family_member_id")
     private Customer familyMember;
 
-    public FamilyRelation() {}
+    public FamilyRelation() {
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Customer getFamilyMember() { return familyMember; }
-    public void setFamilyMember(Customer familyMember) { this.familyMember = familyMember; }
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Customer getFamilyMember() {
+        return familyMember;
+    }
+
+    public void setFamilyMember(Customer familyMember) {
+        this.familyMember = familyMember;
+    }
 }
