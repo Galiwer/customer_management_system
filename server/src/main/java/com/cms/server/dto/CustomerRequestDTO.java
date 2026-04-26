@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class CustomerRequestDTO {
+    @javax.validation.constraints.NotBlank(message = "Name is mandatory")
     private String name;
     private LocalDate dob;
+    @javax.validation.constraints.NotBlank(message = "NIC is mandatory")
     private String nic;
     private List<String> mobiles;
     private List<AddressDTO> addresses;
