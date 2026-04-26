@@ -4,8 +4,10 @@ import com.cms.server.dto.*;
 import com.cms.server.entity.Customer;
 import com.cms.server.repository.CustomerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cms.server.util.TestResultLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@ExtendWith(TestResultLogger.class)
 public class CustomerIntegrationTest {
 
     @Autowired

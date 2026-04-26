@@ -91,11 +91,52 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 ## Testing
 
-The project includes a robust integration test suite. To execute the tests, run the following command from the `server` directory:
+The project includes a robust integration test suite with automated report generation. Running the tests will produce an `automated_test_report.md` file in the project root.
+
+### Option 1: Running Tests with H2 (Default)
+
+By default, the tests run against an H2 in-memory database. This requires no additional setup and is completely isolated from your production data.
+
 ```bash
+cd server
 mvn test
 ```
-The tests utilize an in-memory H2 database to ensure data integrity during the testing process.
+
+### Option 2: Running Tests with MariaDB
+
+If you prefer to test against a real MariaDB instance (for example, to verify dialect-specific behaviour or stored procedure compatibility), follow these steps:
+
+1. Create a dedicated test database to keep it separate from your production data:
+   ```sql
+   CREATE DATABASE customer_db_test;
+   ```
+
+2. Create a file named `src/test/resources/application-mariadb-test.properties` with the following content. A template is already provided in the repository.
+   ```properties
+   spring.datasource.url=jdbc:mariadb://localhost:3306/customer_db_test
+   spring.datasource.username=your_username
+   spring.datasource.password=your_password
+   spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+   spring.jpa.database-platform=org.hibernate.dialect.MariaDB103Dialect
+   spring.jpa.hibernate.ddl-auto=create-drop
+   ```
+
+3. Open `src/test/java/com/cms/server/CustomerIntegrationTest.java` and change the active profile from `test` to `mariadb-test`:
+   ```java
+   // Change this line:
+   @ActiveProfiles("test")
+   // To this:
+   @ActiveProfiles("mariadb-test")
+   ```
+
+4. Run the tests as normal:
+   ```bash
+   mvn test
+   ```
+
+   The schema will be created automatically at the start of the test run and dropped at the end, leaving your test database clean.
+
+> Note: Do not point the test profile at your production `customer_db` database. Always use a separate `customer_db_test` database to avoid data loss.
 
 ## Bulk Upload Specifications
 
