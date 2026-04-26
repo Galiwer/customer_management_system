@@ -1,0 +1,124 @@
+
+.table-scroll-wrapper {
+  width: 100%;
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 10px;
+}
+
+
+.simple-table, .my-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: 'Nunito', sans-serif;
+  table-layout: fixed;
+}
+
+
+.my-table th:nth-child(1) { width: 60px; }  
+.my-table th:nth-child(2) { width: 160px; }  
+.my-table th:nth-child(3) { width: 120px; } 
+.my-table th:nth-child(4) { width: 130px; }  
+.my-table th:nth-child(5) { width: 140px; }  
+.my-table th:nth-child(6) { width: 170px; }  
+.my-table th:nth-child(7) { width: 150px; }  
+.my-table th:nth-child(8) { width: 160px; } 
+
+
+.simple-table th, .my-table th {
+  background: #f8fafc;
+  padding: 16px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.simple-table td, .my-table td {
+  padding: 16px 18px;
+  font-size: 15px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
+.simple-table tr:hover, .my-table tr:hover {
+  background-color: #f8fafc;
+  transition: background 0.15s;
+}
+
+
+.my-table td:last-child, .simple-table td:last-child {
+  white-space: nowrap;
+  min-width: 160px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+
+.btn-edit {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.btn-edit:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.btn-delete {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.btn-delete:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
