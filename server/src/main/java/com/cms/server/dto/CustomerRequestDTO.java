@@ -6,6 +6,7 @@ import java.util.List;
 public class CustomerRequestDTO {
     @javax.validation.constraints.NotBlank(message = "Name is mandatory")
     private String name;
+    @javax.validation.constraints.NotNull(message = "Date of birth is mandatory")
     private LocalDate dob;
     @javax.validation.constraints.NotBlank(message = "NIC is mandatory")
     private String nic;

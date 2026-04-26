@@ -23,7 +23,7 @@ The project is divided into two main components:
 - **HTTP Client**: Axios
 - **Styling**: Modern CSS3 with Flexbox and Grid
 - **Build Tool**: Vite
-- **Icons**: SVG based assets
+- **Icons**: Inline SVG
 
 ## Features
 

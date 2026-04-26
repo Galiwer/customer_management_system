@@ -1,1 +1,0 @@
-import './pages/customerpage.js';

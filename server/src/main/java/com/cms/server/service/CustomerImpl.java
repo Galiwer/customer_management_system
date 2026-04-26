@@ -2,6 +2,9 @@ package com.cms.server.service;
 
 import com.cms.server.dto.*;
 import com.cms.server.entity.*;
+import com.cms.server.exception.DuplicateNicException;
+import com.cms.server.exception.InvalidFileException;
+import com.cms.server.exception.ResourceNotFoundException;
 import com.cms.server.repository.CityRepository;
 import com.cms.server.repository.CountryRepository;
 import com.cms.server.repository.CustomerRepository;
@@ -36,7 +39,7 @@ public class CustomerImpl implements CustomerService {
     @Override
     public CustomerResponseDTO getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         return mapToDTO(customer);
     }
 
@@ -53,6 +56,9 @@ public class CustomerImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerResponseDTO createCustomer(CustomerRequestDTO request) {
+        if (customerRepository.findByNic(request.getNic()).isPresent()) {
+            throw new DuplicateNicException(request.getNic());
+        }
         Customer customer = new Customer();
         mapRequestToEntity(request, customer);
         Customer savedCustomer = customerRepository.save(customer);
@@ -63,7 +69,7 @@ public class CustomerImpl implements CustomerService {
     @Transactional
     public CustomerResponseDTO updateCustomer(Long id, CustomerRequestDTO request) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         
         customer.getMobiles().clear();
         customer.getAddresses().clear();
@@ -78,7 +84,7 @@ public class CustomerImpl implements CustomerService {
     @Transactional
     public void deleteCustomer(Long id) {
         if (!customerRepository.existsById(id)) {
-            throw new RuntimeException("Customer not found!");
+            throw new ResourceNotFoundException("Customer not found with id: " + id);
         }
         customerRepository.deleteById(id);
     }
@@ -86,8 +92,15 @@ public class CustomerImpl implements CustomerService {
     @Override
     @Transactional
     public void uploadCustomers(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new InvalidFileException("Uploaded file is empty or missing.");
+        }
         String filename = file.getOriginalFilename();
-        if (filename == null) return;
+        if (filename == null || (!filename.toLowerCase().endsWith(".xlsx")
+                && !filename.toLowerCase().endsWith(".xls")
+                && !filename.toLowerCase().endsWith(".csv"))) {
+            throw new InvalidFileException("Invalid file format. Please upload an Excel (.xlsx, .xls) or CSV file.");
+        }
 
         Map<String, City> cityCache = new HashMap<>();
         Map<String, Country> countryCache = new HashMap<>();
