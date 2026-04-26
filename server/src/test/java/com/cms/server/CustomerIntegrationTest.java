@@ -31,122 +31,123 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(TestResultLogger.class)
 public class CustomerIntegrationTest {
 
-    @Autowired
-    private MockMvc mvc;
+        @Autowired
+        private MockMvc mvc;
 
-    @Autowired
-    private CustomerRepository repo;
+        @Autowired
+        private CustomerRepository repo;
 
-    @Autowired
-    private ObjectMapper mapper;
+        @Autowired
+        private ObjectMapper mapper;
 
-    @BeforeEach
-    void cleanUp() {
-        repo.deleteAll();
-    }
+        @BeforeEach
+        void cleanUp() {
+                repo.deleteAll();
+        }
 
-    @Test
-    void testBasicCrudOperations() throws Exception {
-        // Create a new customer
-        CustomerRequestDTO req = new CustomerRequestDTO();
-        req.setName("Kamal Perera");
-        req.setNic("921234567V");
-        req.setDob(LocalDate.of(1992, 5, 10));
-        req.setMobiles(Collections.singletonList("0771234567"));
+        @Test
+        void testBasicCrudOperations() throws Exception {
+                // Create a new customer
+                CustomerRequestDTO req = new CustomerRequestDTO();
+                req.setName("Kamal Perera");
+                req.setNic("921234567V");
+                req.setDob(LocalDate.of(1992, 5, 10));
+                req.setMobiles(Collections.singletonList("0771234567"));
 
-        String response = mvc.perform(post("/api/customers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(req)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Kamal Perera"))
-                .andReturn().getResponse().getContentAsString();
+                String response = mvc.perform(post("/api/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(req)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.name").value("Kamal Perera"))
+                                .andReturn().getResponse().getContentAsString();
 
-        Long id = mapper.readValue(response, CustomerResponseDTO.class).getId();
+                Long id = mapper.readValue(response, CustomerResponseDTO.class).getId();
 
-        // Update the name
-        req.setName("Kamal Updated");
-        mvc.perform(put("/api/customers/" + id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(req)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Kamal Updated"));
+                // Update the name
+                req.setName("Kamal Updated");
+                mvc.perform(put("/api/customers/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(req)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.name").value("Kamal Updated"));
 
-        // Delete them
-        mvc.perform(delete("/api/customers/" + id))
-                .andExpect(status().isOk());
-    }
+                // Delete them
+                mvc.perform(delete("/api/customers/" + id))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    void testFamilyMemberLinking() throws Exception {
-        // Create two customers
-        Customer c1 = saveCustomer("Parent User", "NIC1");
-        Customer c2 = saveCustomer("Child User", "NIC2");
+        @Test
+        void testFamilyMemberLinking() throws Exception {
+                // Create two customers
+                Customer c1 = saveCustomer("Parent User", "NIC1");
+                Customer c2 = saveCustomer("Child User", "NIC2");
 
-        // Link c2 as family to c1
-        CustomerRequestDTO linkReq = new CustomerRequestDTO();
-        linkReq.setName(c1.getName());
-        linkReq.setNic(c1.getNic());
-        linkReq.setDob(c1.getDob());
-        linkReq.setFamilyMemberIds(Collections.singletonList(c2.getId()));
+                // Link c2 as family to c1
+                CustomerRequestDTO linkReq = new CustomerRequestDTO();
+                linkReq.setName(c1.getName());
+                linkReq.setNic(c1.getNic());
+                linkReq.setDob(c1.getDob());
+                linkReq.setFamilyMemberIds(Collections.singletonList(c2.getId()));
 
-        mvc.perform(put("/api/customers/" + c1.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(linkReq)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.familyMembers", hasSize(1)))
-                .andExpect(jsonPath("$.familyMembers[0].name").value("Child User"));
-    }
+                mvc.perform(put("/api/customers/" + c1.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(linkReq)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.familyMembers", hasSize(1)))
+                                .andExpect(jsonPath("$.familyMembers[0].name").value("Child User"));
+        }
 
-    @Test
-    void testExcelBulkUpload() throws Exception {
-        // Load the actual sample file
-        InputStream is = getClass().getResourceAsStream("/sample_customers.xlsx");
-        if (is == null) throw new RuntimeException("Excel resource missing!");
-        
-        byte[] bytes = new byte[is.available()];
-        is.read(bytes);
-        is.close();
+        @Test
+        void testExcelBulkUpload() throws Exception {
+                // Load the actual sample file
+                InputStream is = getClass().getResourceAsStream("/sample_customers.xlsx");
+                if (is == null)
+                        throw new RuntimeException("Excel resource missing!");
 
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "sample_customers.xlsx", 
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                bytes);
+                byte[] bytes = new byte[is.available()];
+                is.read(bytes);
+                is.close();
 
-        // Upload
-        mvc.perform(multipart("/api/customers/upload").file(file))
-                .andExpect(status().isOk());
+                MockMultipartFile file = new MockMultipartFile(
+                                "file", "sample_customers.xlsx",
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                bytes);
 
-        // Check if Liam Hemsworth from the Excel exists
-        mvc.perform(get("/api/customers"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThan(0))))
-                .andExpect(jsonPath("$[?(@.nic=='901234123V')]").exists())
-                .andExpect(jsonPath("$[?(@.name=='Liam Hemsworth')]").exists());
-    }
+                // Upload
+                mvc.perform(multipart("/api/customers/upload").file(file))
+                                .andExpect(status().isOk());
 
-    @Test
-    void testValidationFailure() throws Exception {
-        // Try creating without name
-        CustomerRequestDTO badReq = new CustomerRequestDTO();
-        badReq.setNic("12345");
+                // Check if Liam Hemsworth from the Excel exists
+                mvc.perform(get("/api/customers"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$", hasSize(greaterThan(0))))
+                                .andExpect(jsonPath("$[?(@.nic=='901234123V')]").exists())
+                                .andExpect(jsonPath("$[?(@.name=='Liam Hemsworth')]").exists());
+        }
 
-        mvc.perform(post("/api/customers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(badReq)))
-                .andExpect(status().isBadRequest());
-    }
+        @Test
+        void testValidationFailure() throws Exception {
+                // Try creating without name
+                CustomerRequestDTO badReq = new CustomerRequestDTO();
+                badReq.setNic("12345");
 
-    @Test
-    void testDeleteNonExistent() throws Exception {
-        mvc.perform(delete("/api/customers/99999"))
-                .andExpect(status().isNotFound());
-    }
+                mvc.perform(post("/api/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(badReq)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    private Customer saveCustomer(String name, String nic) {
-        Customer c = new Customer();
-        c.setName(name);
-        c.setNic(nic);
-        c.setDob(LocalDate.now());
-        return repo.save(c);
-    }
+        @Test
+        void testDeleteNonExistent() throws Exception {
+                mvc.perform(delete("/api/customers/99999"))
+                                .andExpect(status().isNotFound());
+        }
+
+        private Customer saveCustomer(String name, String nic) {
+                Customer c = new Customer();
+                c.setName(name);
+                c.setNic(nic);
+                c.setDob(LocalDate.now());
+                return repo.save(c);
+        }
 }

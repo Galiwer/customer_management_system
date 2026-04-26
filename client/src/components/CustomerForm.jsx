@@ -170,6 +170,7 @@ export default function CustomerForm({ customer, allCustomers, onSubmit, onCance
           <div className="family-selection-area">
             <div className="family-search-input-wrapper">
               <input
+                id="family-search"
                 type="text"
                 placeholder="Search by name or NIC..."
                 value={familySearch}

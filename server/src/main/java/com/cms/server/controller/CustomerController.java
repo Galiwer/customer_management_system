@@ -37,7 +37,8 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public CustomerResponseDTO update(@PathVariable Long id, @javax.validation.Valid @RequestBody CustomerRequestDTO request) {
+    public CustomerResponseDTO update(@PathVariable Long id,
+            @javax.validation.Valid @RequestBody CustomerRequestDTO request) {
         return customerService.updateCustomer(id, request);
     }
 
