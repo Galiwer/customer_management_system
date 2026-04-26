@@ -1,61 +1,40 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const apiClient = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
 export function fetchCustomers() {
-  return fetch(`${API_BASE_URL}/customers`)
-    .then(resp => {
-      if (!resp.ok) {
-        throw new Error(`HTTP ${resp.status}`);
-      }
-      return resp.json();
-    });
+    return apiClient.get('/customers')
+        .then(response => response.data);
 }
 
 export function createCustomer(data) {
-  return fetch(`${API_BASE_URL}/customers`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).then(resp => {
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status}`);
-    }
-    return resp.json();
-  });
+    return apiClient.post('/customers', data)
+        .then(response => response.data);
 }
 
 export function updateCustomer(id, data) {
-  return fetch(`${API_BASE_URL}/customers/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).then(resp => {
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status}`);
-    }
-    return resp.json();
-  });
+    return apiClient.put(`/customers/${id}`, data)
+        .then(response => response.data);
 }
 
 export function deleteCustomer(id) {
-  return fetch(`${API_BASE_URL}/customers/${id}`, {
-    method: 'DELETE'
-  }).then(resp => {
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status}`);
-    }
-  });
+    return apiClient.delete(`/customers/${id}`)
+        .then(response => response.data);
 }
 
 export function uploadExcel(file) {
-  const form = new FormData();
-  form.append('file', file);
-  return fetch(`${API_BASE_URL}/customers/upload`, {
-    method: 'POST',
-    body: form
-  }).then(resp => {
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status}`);
-    }
-    return resp.text();
-  });
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post('/customers/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then(response => response.data);
 }
