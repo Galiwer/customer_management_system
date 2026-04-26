@@ -33,12 +33,12 @@ public class CustomerController {
     }
 
     @PostMapping
-    public CustomerResponseDTO create(@RequestBody CustomerRequestDTO request) {
+    public CustomerResponseDTO create(@javax.validation.Valid @RequestBody CustomerRequestDTO request) {
         return customerService.createCustomer(request);
     }
 
     @PutMapping("/{id}")
-    public CustomerResponseDTO update(@PathVariable Long id, @RequestBody CustomerRequestDTO request) {
+    public CustomerResponseDTO update(@PathVariable Long id, @javax.validation.Valid @RequestBody CustomerRequestDTO request) {
         return customerService.updateCustomer(id, request);
     }
 
@@ -56,5 +56,13 @@ public class CustomerController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.toString() + " - " + e.getMessage());
         }
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntime(RuntimeException e) {
+        if (e.getMessage().contains("not found")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }
