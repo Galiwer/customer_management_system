@@ -13,7 +13,7 @@ The project is divided into two main components:
 
 ### Backend
 
-- **Core**: Java 1.8, Spring Boot 2.7.18
+- **Core**: Java 8, Spring Boot 2.7.18
 - **Database**: MariaDB
 - **Persistence**: Spring Data JPA / Hibernate
 - **Excel Processing**: Apache POI 4.1.2 with Streaming support (xlsx-streamer)
