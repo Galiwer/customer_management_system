@@ -5,7 +5,7 @@ A full-stack application designed for managing customer records, contact informa
 ## Project Structure
 
 The project is divided into two main components:
-- **client**: A modern, responsive frontend built with Vanilla JavaScript and CSS.
+- **client**: A modern, responsive frontend built with React and CSS.
 - **server**: A robust RESTful API built with Java, Spring Boot, and MariaDB.
 
 ## Technology Stack
@@ -19,7 +19,8 @@ The project is divided into two main components:
 - **Testing**: JUnit 5, MockMvc, H2 In-Memory Database
 
 ### Frontend
-- **Logic**: Vanilla JavaScript (ES6+)
+- **Framework**: React 19
+- **HTTP Client**: Axios
 - **Styling**: Modern CSS3 with Flexbox and Grid
 - **Build Tool**: Vite
 - **Icons**: SVG based assets
