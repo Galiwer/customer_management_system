@@ -1,4 +1,4 @@
-/* Modal Overlay */
+
 .form-overlay {
   position: fixed;
   top: 0;
@@ -92,17 +92,23 @@
   letter-spacing: 0.025em;
 }
 
-.form-group input {
-  padding: 12px 16px;
+.form-group input,
+.mobile-input,
+#family-search {
+  width: 100%;
+  padding: 14px 16px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 16px;
   color: #1e293b;
   transition: all 0.2s;
   background: #f8fafc;
+  box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.mobile-input:focus,
+#family-search:focus {
   outline: none;
   border-color: #3b82f6;
   background: #fff;
@@ -125,18 +131,37 @@
   color: #334155;
 }
 
-/* Dynamic Rows */
+/* Small Buttons inside forms */
+.btn-small {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+
 .form-row {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
   align-items: center;
-  position: relative; /* Crucial for absolute children */
+  position: relative; 
 }
 
-/* Specific styling for mobile delete button to prevent it from overlapping too much */
+
 .form-row .btn-remove-circle {
-  position: static; /* Let it flow with flexbox for mobiles */
+  position: static; 
   flex-shrink: 0;
 }
 
@@ -177,7 +202,7 @@
   transform: scale(1.1);
 }
 
-/* Family Table */
+
 .family-selection-area {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -194,13 +219,13 @@
 .family-table-container {
   max-height: 200px;
   overflow-y: auto;
-  overflow-x: auto; /* Enable side scrolling */
+  overflow-x: auto; 
 }
 
 .family-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 450px; /* Triggers scroll on mobile */
+  min-width: 450px; 
 }
 
 .family-table th {
@@ -221,6 +246,15 @@
 
 .family-table tr:last-child td {
   border-bottom: none;
+}
+
+.family-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  margin: 0;
+  display: block;
 }
 
 .form-footer {

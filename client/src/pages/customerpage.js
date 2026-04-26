@@ -1,6 +1,7 @@
 import { renderTable } from "../components/table.js";
 import { renderCustomerForm } from "../components/customerForm.js";
-import { fetchCustomers, deleteCustomer, updateCustomer, createCustomer } from "../services/api.js";
+import { renderUploadModal } from "../components/uploadModal.js";
+import { fetchCustomers, deleteCustomer, updateCustomer, createCustomer, uploadExcel } from "../services/api.js";
 import "../styles/pages/customerpage.css";
 import { renderHeader } from "../components/header.js";
 import { renderFooter } from "../components/footer.js";
@@ -140,11 +141,32 @@ function initCustomerPage() {
   );
   header.appendChild(searchBar);
 
+  const actionsGroup = document.createElement("div");
+  actionsGroup.className = "header-actions";
+  actionsGroup.style.display = "flex";
+  actionsGroup.style.gap = "10px";
+
+  const uploadBtn = document.createElement("button");
+  uploadBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="17 8 12 3 7 8"></polyline>
+      <line x1="12" y1="3" x2="12" y2="15"></line>
+    </svg>
+    Bulk Upload Excel
+  `;
+  uploadBtn.className = "btn-secondary";
+  uploadBtn.style.display = "flex";
+  uploadBtn.style.alignItems = "center";
+
   const addBtn = document.createElement("button");
   addBtn.textContent = "+ Add New Customer";
   addBtn.className = "btn-primary";
   
-  header.appendChild(addBtn);
+  actionsGroup.appendChild(uploadBtn);
+  actionsGroup.appendChild(addBtn);
+  header.appendChild(actionsGroup);
+  
   root.appendChild(header);
 
   root.appendChild(container);
@@ -152,6 +174,20 @@ function initCustomerPage() {
 
   // Render Footer
   document.body.appendChild(renderFooter());
+
+  uploadBtn.addEventListener("click", () => {
+    const modal = renderUploadModal(
+      () => {
+        alert("Excel file uploaded successfully!");
+        modal.remove();
+        loadTableData(container);
+      },
+      () => {
+        modal.remove();
+      }
+    );
+    document.body.appendChild(modal);
+  });
 
   addBtn.addEventListener("click", () => {
     showForm({ name: '', dob: '', nic: '', mobiles: [], addresses: [] });

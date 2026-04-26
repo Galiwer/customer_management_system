@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -84,19 +86,68 @@ public class CustomerImpl implements CustomerService {
     @Override
     @Transactional
     public void uploadCustomers(MultipartFile file) throws IOException {
-        // Cache for cities and countries to minimize DB calls
+        String filename = file.getOriginalFilename();
+        if (filename == null) return;
+
         Map<String, City> cityCache = new HashMap<>();
         Map<String, Country> countryCache = new HashMap<>();
-        
-        // Initial load of master data
         cityRepository.findAll().forEach(c -> cityCache.put(c.getName(), c));
         countryRepository.findAll().forEach(c -> countryCache.put(c.getName(), c));
 
+        if (filename.toLowerCase().endsWith(".csv")) {
+            processCsv(file, cityCache, countryCache);
+        } else {
+            processExcel(file, cityCache, countryCache);
+        }
+    }
+
+    private void processCsv(MultipartFile file, Map<String, City> cityCache, Map<String, Country> countryCache) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            List<Customer> batch = new ArrayList<>();
+            int count = 0;
+            boolean isFirstLine = true;
+
+            while ((line = br.readLine()) != null) {
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue; // Skip header
+                }
+
+                String[] cols = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                if (cols.length < 3) continue;
+
+                String name = cols.length > 0 ? cols[0].replace("\"", "").trim() : null;
+                String dobStr = cols.length > 1 ? cols[1].replace("\"", "").trim() : null;
+                String nic = cols.length > 2 ? cols[2].replace("\"", "").trim() : null;
+                String mobilesStr = cols.length > 3 ? cols[3].replace("\"", "").trim() : null;
+                String line1 = cols.length > 4 ? cols[4].replace("\"", "").trim() : null;
+                String cityStr = cols.length > 5 ? cols[5].replace("\"", "").trim() : null;
+                String countryStr = cols.length > 6 ? cols[6].replace("\"", "").trim() : null;
+
+                if (nic == null || nic.isEmpty()) continue;
+
+                Customer customer = processRowData(nic, name, dobStr, mobilesStr, line1, cityStr, countryStr, cityCache, countryCache);
+                batch.add(customer);
+
+                if (++count % 500 == 0) {
+                    customerRepository.saveAll(batch);
+                    customerRepository.flush();
+                    batch.clear();
+                }
+            }
+            if (!batch.isEmpty()) {
+                customerRepository.saveAll(batch);
+            }
+        }
+    }
+
+    private void processExcel(MultipartFile file, Map<String, City> cityCache, Map<String, Country> countryCache) throws IOException {
         try (InputStream is = file.getInputStream(); 
              Workbook workbook = StreamingReader.builder()
-                .rowCacheSize(100)    // number of rows to keep in memory (default is 10)
-                .bufferSize(4096)     // buffer size to use when reading InputStream to a file (default is 1024)
-                .open(is)) {          // opens the InputStream for reading
+                .rowCacheSize(100)
+                .bufferSize(4096)
+                .open(is)) {
             
             Sheet sheet = workbook.getSheetAt(0);
             List<Customer> batch = new ArrayList<>();
@@ -115,57 +166,9 @@ public class CustomerImpl implements CustomerService {
 
                 if (nic == null || nic.isEmpty()) continue;
 
-                Customer customer = customerRepository.findByNic(nic)
-                        .orElse(new Customer());
-                
-                customer.getMobiles().clear();
-                customer.getAddresses().clear();
-
-                customer.setName(name);
-                customer.setNic(nic);
-                if (dobStr != null && !dobStr.isEmpty()) {
-                    try {
-                        customer.setDob(LocalDate.parse(dobStr));
-                    } catch (Exception e) {
-                        // Handle date format if needed
-                    }
-                }
-
-                if (mobilesStr != null) {
-                    for (String mNum : mobilesStr.split(",")) {
-                        Mobile m = new Mobile();
-                        m.setMobile(mNum.trim());
-                        m.setCustomer(customer);
-                        customer.getMobiles().add(m);
-                    }
-                }
-
-                if (line1 != null && !line1.isEmpty()) {
-                    Address addr = new Address();
-                    addr.setLine1(line1);
-                    addr.setCustomer(customer);
-
-                    if (cityStr != null) {
-                        City city = cityCache.computeIfAbsent(cityStr, k -> {
-                            City c = new City();
-                            c.setName(k);
-                            return cityRepository.save(c);
-                        });
-                        addr.setCity(city);
-                    }
-
-                    if (countryStr != null) {
-                        Country country = countryCache.computeIfAbsent(countryStr, k -> {
-                            Country c = new Country();
-                            c.setName(k);
-                            return countryRepository.save(c);
-                        });
-                        addr.setCountry(country);
-                    }
-                    customer.getAddresses().add(addr);
-                }
-
+                Customer customer = processRowData(nic, name, dobStr, mobilesStr, line1, cityStr, countryStr, cityCache, countryCache);
                 batch.add(customer);
+
                 if (++count % 500 == 0) {
                     customerRepository.saveAll(batch);
                     customerRepository.flush();
@@ -176,6 +179,59 @@ public class CustomerImpl implements CustomerService {
                 customerRepository.saveAll(batch);
             }
         }
+    }
+
+    private Customer processRowData(String nic, String name, String dobStr, String mobilesStr, String line1, String cityStr, String countryStr, Map<String, City> cityCache, Map<String, Country> countryCache) {
+        Customer customer = customerRepository.findByNic(nic).orElse(new Customer());
+        
+        customer.getMobiles().clear();
+        customer.getAddresses().clear();
+
+        customer.setName(name);
+        customer.setNic(nic);
+        
+        if (dobStr != null && !dobStr.isEmpty()) {
+            try {
+                customer.setDob(LocalDate.parse(dobStr));
+            } catch (Exception e) {
+                // Ignore invalid date
+            }
+        }
+
+        if (mobilesStr != null && !mobilesStr.isEmpty()) {
+            for (String mNum : mobilesStr.split(",")) {
+                Mobile m = new Mobile();
+                m.setMobile(mNum.trim());
+                m.setCustomer(customer);
+                customer.getMobiles().add(m);
+            }
+        }
+
+        if (line1 != null && !line1.isEmpty()) {
+            Address addr = new Address();
+            addr.setLine1(line1);
+            addr.setCustomer(customer);
+
+            if (cityStr != null && !cityStr.isEmpty()) {
+                City city = cityCache.computeIfAbsent(cityStr, k -> {
+                    City c = new City();
+                    c.setName(k);
+                    return cityRepository.save(c);
+                });
+                addr.setCity(city);
+            }
+
+            if (countryStr != null && !countryStr.isEmpty()) {
+                Country country = countryCache.computeIfAbsent(countryStr, k -> {
+                    Country c = new Country();
+                    c.setName(k);
+                    return countryRepository.save(c);
+                });
+                addr.setCountry(country);
+            }
+            customer.getAddresses().add(addr);
+        }
+        return customer;
     }
 
     private String getCellValue(Row row, int cellIndex) {
@@ -210,9 +266,26 @@ public class CustomerImpl implements CustomerService {
 
                 if (ad.getCityId() != null) {
                     cityRepository.findById(ad.getCityId()).ifPresent(a::setCity);
+                } else if (ad.getCityName() != null && !ad.getCityName().trim().isEmpty()) {
+                    String cName = ad.getCityName().trim();
+                    City city = cityRepository.findByName(cName).orElseGet(() -> {
+                        City newCity = new City();
+                        newCity.setName(cName);
+                        return cityRepository.save(newCity);
+                    });
+                    a.setCity(city);
                 }
+
                 if (ad.getCountryId() != null) {
                     countryRepository.findById(ad.getCountryId()).ifPresent(a::setCountry);
+                } else if (ad.getCountryName() != null && !ad.getCountryName().trim().isEmpty()) {
+                    String cName = ad.getCountryName().trim();
+                    Country country = countryRepository.findByName(cName).orElseGet(() -> {
+                        Country newCountry = new Country();
+                        newCountry.setName(cName);
+                        return countryRepository.save(newCountry);
+                    });
+                    a.setCountry(country);
                 }
 
                 a.setCustomer(customer);

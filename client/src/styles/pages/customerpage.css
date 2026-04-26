@@ -46,7 +46,7 @@
   flex-direction: column;
 }
 
-/* Page action buttons */
+
 .btn-primary {
   background: #3b82f6;
   color: white;
@@ -92,7 +92,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Loading/Empty states */
+
 #table-container p {
   padding: 40px;
   text-align: center;

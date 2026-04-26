@@ -23,25 +23,25 @@
 
     <dependencies>
 
-        <!-- REST APIs -->
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- JPA (Database) -->
+      
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Validation -->
+       
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- MariaDB -->
+      
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
@@ -49,30 +49,37 @@
         </dependency>
 
 
-        <!-- Test (JUnit) -->
+      
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- Excel Upload (IMPORTANT for your task) -->
+       
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>5.2.5</version>
+            <version>4.1.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.2.5</version>
+            <version>4.1.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.monitorjbl</groupId>
             <artifactId>xlsx-streamer</artifactId>
             <version>2.2.0</version>
+        </dependency>
+
+       
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

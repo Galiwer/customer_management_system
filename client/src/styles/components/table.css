@@ -1,4 +1,4 @@
-/* Horizontal scroll wrapper */
+
 .table-scroll-wrapper {
   width: 100%;
   flex: 1;
@@ -17,7 +17,7 @@
   border-radius: 10px;
 }
 
-/* Table fills full width on large screens, scrolls on mobile */
+
 .simple-table, .my-table {
   width: 100%;
   min-width: 1100px;
@@ -27,17 +27,17 @@
   table-layout: fixed;
 }
 
-/* Column widths */
-.my-table th:nth-child(1) { width: 60px; }   /* ID */
-.my-table th:nth-child(2) { width: 160px; }  /* Name */
-.my-table th:nth-child(3) { width: 120px; }  /* DOB */
-.my-table th:nth-child(4) { width: 130px; }  /* NIC */
-.my-table th:nth-child(5) { width: 140px; }  /* Mobiles */
-.my-table th:nth-child(6) { width: 170px; }  /* Addresses */
-.my-table th:nth-child(7) { width: 150px; }  /* Family */
-.my-table th:nth-child(8) { width: 160px; }  /* Actions — wider so buttons don't vanish */
 
-/* Sticky headers */
+.my-table th:nth-child(1) { width: 60px; }  
+.my-table th:nth-child(2) { width: 160px; }  
+.my-table th:nth-child(3) { width: 120px; } 
+.my-table th:nth-child(4) { width: 130px; }  
+.my-table th:nth-child(5) { width: 140px; }  
+.my-table th:nth-child(6) { width: 170px; }  
+.my-table th:nth-child(7) { width: 150px; }  
+.my-table th:nth-child(8) { width: 160px; } 
+
+
 .simple-table th, .my-table th {
   background: #f8fafc;
   padding: 16px 18px;
@@ -55,7 +55,7 @@
   text-overflow: ellipsis;
 }
 
-/* Data cells */
+
 .simple-table td, .my-table td {
   padding: 16px 18px;
   font-size: 15px;
@@ -73,7 +73,7 @@
   transition: background 0.15s;
 }
 
-/* Actions column — ALWAYS on one row, never hidden */
+
 .my-table td:last-child, .simple-table td:last-child {
   white-space: nowrap;
   min-width: 160px;
@@ -81,7 +81,7 @@
   overflow: visible;
 }
 
-/* Action buttons */
+
 .btn-edit {
   background: #eff6ff;
   color: #3b82f6;

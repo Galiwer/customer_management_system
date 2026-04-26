@@ -1,7 +1,7 @@
 import '../styles/components/form.css';
 
 export function renderCustomerForm(customer, onSubmit, onCancel, allCustomers = []) {
-  // Create Modal Overlay
+  
   const overlay = document.createElement('div');
   overlay.className = 'form-overlay';
 
@@ -176,7 +176,7 @@ export function renderCustomerForm(customer, onSubmit, onCancel, allCustomers = 
   }
 
   function attachEvents() {
-    // Top-level buttons
+    
     container.querySelector('.btn-close').onclick = onCancel;
     container.querySelector('#frm-cancel').onclick = onCancel;
     container.querySelector('#frm-save').onclick = () => {
@@ -197,24 +197,24 @@ export function renderCustomerForm(customer, onSubmit, onCancel, allCustomers = 
       onSubmit(payload);
     };
 
-    // Stable Event Delegation on the container itself
+    
     container.onclick = (e) => {
       const target = e.target;
       
-      // Add Mobile
+     
       if (target.id === 'btn-add-mobile') {
         syncState();
         mobiles.push('');
         render();
       }
-      // Add Address
+      
       else if (target.id === 'btn-add-address') {
         syncState();
         addresses.push({});
         render();
       }
       
-      // Remove Mobile (using closest for reliable clicking)
+      
       const removeMobBtn = target.closest('.remove-mobile');
       if (removeMobBtn) {
         syncState();
@@ -223,7 +223,7 @@ export function renderCustomerForm(customer, onSubmit, onCancel, allCustomers = 
         render();
       }
       
-      // Remove Address
+      
       const removeAddrBtn = target.closest('.remove-address');
       if (removeAddrBtn) {
         syncState();
@@ -233,7 +233,7 @@ export function renderCustomerForm(customer, onSubmit, onCancel, allCustomers = 
       }
     };
 
-    // Family Search
+ 
     const familySearch = container.querySelector('#family-search');
     if (familySearch) {
       familySearch.oninput = (e) => {
@@ -243,7 +243,7 @@ export function renderCustomerForm(customer, onSubmit, onCancel, allCustomers = 
       };
     }
 
-    // Focus handling
+    
     const searchInp = container.querySelector('#family-search');
     if (searchInp && document.activeElement && document.activeElement.id === 'family-search') {
       searchInp.focus();

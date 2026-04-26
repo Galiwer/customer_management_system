@@ -9,15 +9,22 @@ export function renderSearchBar(onSearch, onFilter) {
   searchInput.type = 'text';
   searchInput.placeholder = 'Search by Name or NIC...';
   searchInput.className = 'search-input';
-  searchInput.style.padding = '8px 12px';
-  searchInput.style.borderRadius = '6px';
+  searchInput.style.padding = '14px 18px';
+  searchInput.style.borderRadius = '10px';
   searchInput.style.border = '1px solid #cbd5e0';
-  searchInput.style.width = '300px';
+  searchInput.style.width = '350px';
+  searchInput.style.fontSize = '16px';
+  searchInput.style.backgroundColor = '#f8fafc';
+  searchInput.style.color = '#1e293b';
 
   const filterBtn = document.createElement('button');
   filterBtn.textContent = 'Search';
   filterBtn.className = 'btn-secondary';
-  filterBtn.style.padding = '8px 16px';
+  filterBtn.style.padding = '14px 24px';
+  filterBtn.style.borderRadius = '10px';
+  filterBtn.style.fontSize = '16px';
+  filterBtn.style.fontWeight = '600';
+  filterBtn.style.cursor = 'pointer';
 
   container.appendChild(searchInput);
   container.appendChild(filterBtn);

@@ -3,6 +3,8 @@ package com.cms.server.controller;
 import com.cms.server.dto.CustomerRequestDTO;
 import com.cms.server.dto.CustomerResponseDTO;
 import com.cms.server.service.CustomerService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,7 +48,13 @@ public class CustomerController {
     }
 
     @PostMapping("/upload")
-    public void upload(@RequestParam("file") MultipartFile file) throws IOException {
-        customerService.uploadCustomers(file);
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+        try {
+            customerService.uploadCustomers(file);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.toString() + " - " + e.getMessage());
+        }
     }
 }

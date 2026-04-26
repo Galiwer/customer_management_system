@@ -14,9 +14,9 @@ INSERT INTO customer_mobile (mobile, customer_id) VALUES ('0780001112', 3);
 
 
 INSERT INTO address (line1, line2, city_id, country_id, customer_id) 
-VALUES ('No 12, Flower Road', 'First Floor', 1, 1, 1);
+VALUES ('No 489, Flower Road', 'First Floor', 1, 1, 1);
 INSERT INTO address (line1, line2, city_id, country_id, customer_id) 
-VALUES ('No 55, Park Street', NULL, 1, 1, 2);
+VALUES ('No 555, Park Street', NULL, 1, 1, 2);
 
 INSERT INTO family_relation (customer_id, family_member_id) VALUES (1, 2);
 INSERT INTO family_relation (customer_id, family_member_id) VALUES (2, 1);
